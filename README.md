@@ -25,6 +25,7 @@ This plugin tracks players' active play time and rewards them.
 | `/playtime` | 自分のプレイ時間を表示します | なし(全員) |
 | `/playtime <プレイヤー名>` | 他の人の情報を表示します | `playtimerewards.others`(既定: なし) |
 | `/playtime top` | 合計プレイ時間の上位 10 人を表示します | なし(全員) |
+| `/playtime help` | 使い方を表示します(権限が無いコマンドは表示しません) | なし(全員) |
 | `/playtime reload` | config.yml と messages.yml を読み直します | `playtimerewards.reload`(既定: OP) |
 
 # Configuration

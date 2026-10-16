@@ -58,8 +58,9 @@
 - `/playtime` — 自分の情報(今回のログイン(離席は除く)、今日・今週・今月・合計、グループ、昇格の対象なら昇格までの残り)。全員が使える
 - `/playtime <プレイヤー名>` — 他の人の情報(初参加日時、ログイン日数、最終ログイン、今回のログインと離席中か、今回の離席時間、今日・今週・今月・合計、投票数、グループ)。`playtimerewards.others`(既定 false)
 - `/playtime top` — 合計プレイ時間の上位 10 人(全期間)。全員が使える
+- `/playtime help` — 使い方の一覧。`<プレイヤー名>` と `reload` の行は、その権限がある人にだけ表示する。全員が使える。plugin.yml の description にも top と help を書いている(ヘルプには description だけが表示されるため)
 - `/playtime reload` — config.yml と messages.yml を読み直す(プレイヤーデータは読み直さない)。`playtimerewards.reload`(既定 OP)
-- 補完するのは `top`・`reload`(権限があれば)と、ログイン中の人の名前(`others` の権限があれば)だけ
+- 補完するのは `top`・`help`・`reload`(権限があれば)と、ログイン中の人の名前(`others` の権限があれば)だけ
 
 ### プレイ時間と離席
 - 毎秒は数えない。ログイン・離席・戻り・ログアウトの時刻の差で計算する(`PlayTimeTracker`)

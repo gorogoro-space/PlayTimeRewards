@@ -50,6 +50,15 @@ top:
   empty: 'まだ記録がありません'
   preparing: 'ランキングを集計中です。しばらくしてから実行してください'
 
+# /playtime help(権限が無いコマンドの行は表示しません)
+help:
+  header: '&e―― /playtime の使い方 ――'
+  self: '/playtime : 自分のプレイ時間を表示します'
+  top: '/playtime top : プレイ時間のランキング(上位 10 人)を表示します'
+  others: '/playtime <プレイヤー名> : 他の人の情報を表示します'
+  reload: '/playtime reload : 設定を読み直します'
+  help: '/playtime help : この使い方を表示します'
+
 # 全員への通知
 afk:
   away: '&c{player} さんが離席しました'

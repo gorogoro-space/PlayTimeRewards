@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * /playtime コマンド。
- * /playtime(自分)、/playtime &lt;プレイヤー名&gt;(他人)、/playtime top、/playtime reload
+ * /playtime(自分)、/playtime &lt;プレイヤー名&gt;(他人)、/playtime top、/playtime help、/playtime reload
  */
 final class PlayTimeCommand implements TabExecutor {
 
@@ -47,6 +47,10 @@ final class PlayTimeCommand implements TabExecutor {
             showTop(sender);
             return true;
         }
+        if (arg.equalsIgnoreCase("help")) {
+            showHelp(sender);
+            return true;
+        }
         if (arg.equalsIgnoreCase("reload")) {
             if (!sender.hasPermission(PERM_RELOAD)) {
                 sender.sendMessage(plugin.messages().get("command.no-permission"));
@@ -61,6 +65,21 @@ final class PlayTimeCommand implements TabExecutor {
         }
         showOther(sender, arg);
         return true;
+    }
+
+    /** 使い方の一覧。権限が無いコマンドは表示しない */
+    private void showHelp(CommandSender sender) {
+        Messages m = plugin.messages();
+        sender.sendMessage(m.get("help.header"));
+        sender.sendMessage(m.get("help.self"));
+        sender.sendMessage(m.get("help.top"));
+        if (sender.hasPermission(PERM_OTHERS)) {
+            sender.sendMessage(m.get("help.others"));
+        }
+        if (sender.hasPermission(PERM_RELOAD)) {
+            sender.sendMessage(m.get("help.reload"));
+        }
+        sender.sendMessage(m.get("help.help"));
     }
 
     private void showSelf(Player player) {
@@ -200,6 +219,7 @@ final class PlayTimeCommand implements TabExecutor {
         String prefix = args[0].toLowerCase(Locale.ROOT);
         List<String> candidates = new ArrayList<>();
         candidates.add("top");
+        candidates.add("help");
         if (sender.hasPermission(PERM_RELOAD)) {
             candidates.add("reload");
         }

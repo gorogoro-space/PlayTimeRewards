@@ -10,8 +10,8 @@ softdepend: [Votifier]
 
 commands:
   playtime:
-    description: プレイ時間を表示します
-    usage: /playtime [プレイヤー名|top|reload]
+    description: プレイ時間を表示します(/playtime top でランキング、/playtime help で使い方)
+    usage: /playtime [プレイヤー名|top|help|reload]
 
 permissions:
   playtimerewards.others:
