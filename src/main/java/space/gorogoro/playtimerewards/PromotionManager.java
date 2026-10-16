@@ -1,5 +1,6 @@
 package space.gorogoro.playtimerewards;
 
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.InheritanceNode;
@@ -99,7 +100,11 @@ final class PromotionManager {
                 online.sendMessage(plugin.messages().get("promotion.self",
                         "hours", formatHours(p.hours()), "group", p.to()));
             }
-            Bukkit.broadcast(plugin.messages().get("promotion.broadcast", "player", name, "group", p.to()));
+            // ログイン中の全プレイヤーに送る(コンソールには上のログだけを出す)
+            Component broadcast = plugin.messages().get("promotion.broadcast", "player", name, "group", p.to());
+            for (Player each : Bukkit.getOnlinePlayers()) {
+                each.sendMessage(broadcast);
+            }
         }));
     }
 

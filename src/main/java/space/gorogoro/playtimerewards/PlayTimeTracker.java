@@ -1,6 +1,7 @@
 package space.gorogoro.playtimerewards;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -166,7 +167,7 @@ final class PlayTimeTracker implements Listener {
                 s.segmentStart = -1L;
                 s.afkStart = last;
                 s.afk = true;
-                Bukkit.broadcast(plugin.messages().get("afk.away", "player", p.getName()));
+                notifyPlayers(plugin.messages().get("afk.away", "player", p.getName()));
             }
         }
     }
@@ -201,7 +202,14 @@ final class PlayTimeTracker implements Listener {
         s.afk = false;
         s.afkMillis += Math.max(0L, now - s.afkStart);
         s.segmentStart = now;
-        Bukkit.broadcast(plugin.messages().get("afk.back", "player", player.getName()));
+        notifyPlayers(plugin.messages().get("afk.back", "player", player.getName()));
+    }
+
+    /** ログイン中の全プレイヤーに送る(コンソールには出さない) */
+    private static void notifyPlayers(Component message) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendMessage(message);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
