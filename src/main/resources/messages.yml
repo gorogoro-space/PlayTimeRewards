@@ -15,7 +15,6 @@ duration:
 
 # /playtime(自分の情報)
 self:
-  server-time: 'サーバー時刻: {time}'
   session: '今回のログイン(離席中は除外): {time}'
   today: '今日: {time}'
   week: '今週: {time}'
@@ -27,8 +26,7 @@ self:
 # /playtime <プレイヤー名>(他の人の情報)
 other:
   header: '{player} さんの情報'
-  first-played: '初参加: {days}日前'
-  first-played-scanning: '初参加: 確認中'
+  first-played-date: '初参加: {time}({days}日前)'
   first-played-unknown: '初参加: 不明'
   login-days: 'ログイン日数: {days}日'
   last-login: '最終ログイン: {time}'

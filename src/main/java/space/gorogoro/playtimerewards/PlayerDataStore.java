@@ -42,7 +42,6 @@ final class PlayerDataStore {
     private long todayStartMillis;
     private long weekStartMillis;
     private long monthStartMillis;
-    private boolean firstPlayedScanDone;
 
     PlayerDataStore() {
         setPeriods(LocalDate.now(ZONE));
@@ -61,7 +60,6 @@ final class PlayerDataStore {
         YamlConfiguration yaml = new YamlConfiguration();
         yaml.load(file);
 
-        firstPlayedScanDone = yaml.getBoolean("first-played-scan-done");
         ConfigurationSection players = yaml.getConfigurationSection("players");
         if (players != null) {
             for (String key : players.getKeys(false)) {
@@ -170,14 +168,6 @@ final class PlayerDataStore {
         return monthStartMillis;
     }
 
-    boolean isFirstPlayedScanDone() {
-        return firstPlayedScanDone;
-    }
-
-    void setFirstPlayedScanDone(boolean done) {
-        firstPlayedScanDone = done;
-    }
-
     /**
      * 日付が変わっていれば、今日・今週・今月の時間を 0 に戻す。
      * 切り替える前に、ログイン中の人のプレイ時間を記録に足しておくこと。
@@ -219,11 +209,10 @@ final class PlayerDataStore {
         for (PlayerRecord r : records.values()) {
             copies.add(r.copy());
         }
-        return new Snapshot(copies, today, weekStart, monthStart, firstPlayedScanDone);
+        return new Snapshot(copies, today, weekStart, monthStart);
     }
 
-    record Snapshot(List<PlayerRecord> records, LocalDate today, LocalDate weekStart, LocalDate monthStart,
-                    boolean firstPlayedScanDone) {
+    record Snapshot(List<PlayerRecord> records, LocalDate today, LocalDate weekStart, LocalDate monthStart) {
     }
 
     record TopEntry(String name, long total) {
@@ -246,7 +235,6 @@ final class PlayerDataStore {
     static void write(File file, Snapshot snapshot) throws IOException {
         StringBuilder sb = new StringBuilder(snapshot.records().size() * 260);
         sb.append("# PlayTimeRewards のプレイヤーデータ。サーバーの稼働中は編集しないでください。\n");
-        sb.append("first-played-scan-done: ").append(snapshot.firstPlayedScanDone()).append('\n');
         sb.append("periods:\n");
         sb.append("  today: '").append(snapshot.today()).append("'\n");
         sb.append("  week: '").append(snapshot.weekStart()).append("'\n");

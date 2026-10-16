@@ -7,16 +7,13 @@ import java.util.UUID;
  */
 final class PlayerRecord {
 
-    /** 初参加日時をまだ調べていない */
-    static final long FIRST_PLAYED_UNCHECKED = 0L;
-    /** 初参加日時を調べたが、わからなかった */
-    static final long FIRST_PLAYED_UNKNOWN = -1L;
     /** 最後にログイン日数を数えた日が無い */
     static final long NO_DAY = Long.MIN_VALUE;
 
     final UUID uuid;
     String name;
-    long firstPlayed = FIRST_PLAYED_UNCHECKED;
+    /** 初参加日時(エポックミリ秒。0 以下は不明) */
+    long firstPlayed;
     /** 離席を除いたプレイ時間(ミリ秒) */
     long total;
     long today;

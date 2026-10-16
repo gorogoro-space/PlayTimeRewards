@@ -7,12 +7,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * /playtime コマンド。
@@ -73,7 +76,6 @@ final class PlayTimeCommand implements TabExecutor {
         long pending = tracker.livePending(r, now);
         String group = plugin.promotions().primaryGroup(player.getUniqueId());
 
-        player.sendMessage(m.get("self.server-time", "time", m.dateTime(now)));
         player.sendMessage(m.get("self.session", "time", m.duration(s.activeNow(now))));
         player.sendMessage(m.get("self.today", "time", m.duration(r.today + pending)));
         player.sendMessage(m.get("self.week", "time", m.duration(r.week + pending)));
@@ -96,9 +98,32 @@ final class PlayTimeCommand implements TabExecutor {
             return;
         }
         UUID uuid = found.uuid;
-        // グループはオフラインの人だと LuckPerms が別スレッドで読み込むため、そのあとメインスレッドで表示する
-        plugin.promotions().loadPrimaryGroup(uuid).whenComplete((group, ex) ->
-                Bukkit.getScheduler().runTask(plugin, () -> sendOther(sender, uuid, ex == null ? group : null)));
+        // グループはオフラインの人だと LuckPerms が別スレッドで読み込む
+        CompletableFuture<String> group = plugin.promotions().loadPrimaryGroup(uuid)
+                .exceptionally(ex -> null);
+        // 初参加日時の記録が無い人は、別スレッドでその人の .dat を読む
+        CompletableFuture<Long> firstPlayed;
+        if (found.firstPlayed > 0L || Bukkit.getWorlds().isEmpty()) {
+            firstPlayed = CompletableFuture.completedFuture(0L);
+        } else {
+            File dat = new File(new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata"), uuid + ".dat");
+            firstPlayed = CompletableFuture.supplyAsync(() -> FirstPlayedReader.read(dat),
+                    task -> Bukkit.getScheduler().runTaskAsynchronously(plugin, task));
+        }
+        // どちらも終わったら、メインスレッドで表示する
+        group.thenCombine(firstPlayed, (g, first) -> {
+            if (!plugin.isEnabled()) {
+                return null;
+            }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                PlayerRecord r = plugin.store().get(uuid);
+                if (r != null && r.firstPlayed <= 0L && first > 0L) {
+                    r.firstPlayed = first;
+                }
+                sendOther(sender, uuid, g);
+            });
+            return null;
+        });
     }
 
     private void sendOther(CommandSender sender, UUID uuid, String group) {
@@ -116,12 +141,12 @@ final class PlayTimeCommand implements TabExecutor {
 
         lines.add(m.get("other.header", "player", r.name));
         if (r.firstPlayed > 0L) {
+            // 日数は日付の差で数える(昨日の 23:59 なら 1 日前)
             long days = ChronoUnit.DAYS.between(
-                    LocalDate.ofInstant(java.time.Instant.ofEpochMilli(r.firstPlayed), PlayerDataStore.ZONE),
+                    LocalDate.ofInstant(Instant.ofEpochMilli(r.firstPlayed), PlayerDataStore.ZONE),
                     LocalDate.now(PlayerDataStore.ZONE));
-            lines.add(m.get("other.first-played", "days", Long.toString(days)));
-        } else if (r.firstPlayed == PlayerRecord.FIRST_PLAYED_UNCHECKED && !plugin.store().isFirstPlayedScanDone()) {
-            lines.add(m.get("other.first-played-scanning"));
+            lines.add(m.get("other.first-played-date", "time", m.dateTime(r.firstPlayed),
+                    "days", Long.toString(days)));
         } else {
             lines.add(m.get("other.first-played-unknown"));
         }

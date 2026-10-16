@@ -34,7 +34,6 @@ public final class PlayTimeRewards extends JavaPlugin {
     private PlayerDataStore store;
     private PlayTimeTracker tracker;
     private PromotionManager promotions;
-    private FirstPlayedScanner scanner;
     private File dataFile;
     /** 保存とランキングの集計を行う専用スレッド */
     private ExecutorService ioExecutor;
@@ -98,16 +97,10 @@ public final class PlayTimeRewards extends JavaPlugin {
         // ランキングを最初に一度作っておく
         PlayerDataStore.Snapshot snapshot = store.snapshot();
         ioExecutor.execute(() -> top = new TopList(PlayerDataStore.top(snapshot, TOP_SIZE), System.currentTimeMillis()));
-
-        scanner = new FirstPlayedScanner(this);
-        scanner.startIfNeeded();
     }
 
     @Override
     public void onDisable() {
-        if (scanner != null) {
-            scanner.cancel();
-        }
         if (tickTask != null) {
             tickTask.cancel();
         }
