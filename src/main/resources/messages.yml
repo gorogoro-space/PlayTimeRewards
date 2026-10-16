@@ -1,0 +1,69 @@
+# 表示する文言です。& のあとに記号を書くと色が付きます(例: &c は赤)。
+# {...} の部分は、表示するときに値に置き換わります。
+# 変更したら /playtime reload で読み直せます。
+
+# 日時の書式
+date-time-format: 'yyyy/MM/dd HH:mm:ss'
+date-format: 'yyyy/MM/dd'
+
+# 時間の書式。1 分未満は秒、それ以上は日・時間・分で表示します。
+duration:
+  days: '{n}日'
+  hours: '{n}時間'
+  minutes: '{n}分'
+  seconds: '{n}秒'
+
+# /playtime(自分の情報)
+self:
+  server-time: 'サーバー時刻: {time}'
+  session: '今回のログイン(離席中は除外): {time}'
+  today: '今日: {time}'
+  week: '今週: {time}'
+  month: '今月: {time}'
+  total: '合計: {time}'
+  group: 'グループ: {group}'
+  until-promotion: '昇格まであと: {time}'
+
+# /playtime <プレイヤー名>(他の人の情報)
+other:
+  header: '{player} さんの情報'
+  first-played: '初参加: {days}日前'
+  first-played-scanning: '初参加: 確認中'
+  first-played-unknown: '初参加: 不明'
+  login-days: 'ログイン日数: {days}日'
+  last-login: '最終ログイン: {time}'
+  session: '今回のログイン(離席中は除外): {time}{afk}'
+  session-afk: '(離席中)'
+  session-offline: '今回のログイン(離席中は除外): オフライン'
+  afk-time: '今回の離席時間: {time}'
+  afk-time-offline: '今回の離席時間: オフライン'
+  today: '今日: {time}'
+  week: '今週: {time}'
+  month: '今月: {time}'
+  total: '合計: {time}'
+  votes: '投票数: {count}回'
+  group: 'グループ: {group}'
+
+# /playtime top
+top:
+  header: '&e―― プレイ時間ランキング ――'
+  period: '&b全期間({date} 時点)'
+  line: '&a{rank}位 {time} &f{player}'
+  empty: 'まだ記録がありません'
+  preparing: 'ランキングを集計中です。しばらくしてから実行してください'
+
+# 全員への通知
+afk:
+  away: '&c{player} さんが離席しました'
+  back: '&c{player} さんが戻りました'
+promotion:
+  self: '&cプレイ時間が {hours}時間 に達したため、{group} になりました'
+  broadcast: '&c{player} さんが {group} になりました'
+
+# コマンドの結果
+command:
+  player-only: 'このコマンドはプレイヤーだけが実行できます'
+  no-permission: '&cこのコマンドを実行する権限がありません'
+  not-found: '&c{player} さんの記録は見つかりません'
+  reloaded: '設定を読み直しました'
+  reload-failed: '&c設定の読み直しに失敗しました。サーバーのログを確認してください'

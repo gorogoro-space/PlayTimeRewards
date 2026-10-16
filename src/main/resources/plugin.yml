@@ -1,0 +1,22 @@
+name: PlayTimeRewards
+version: '${version}'
+main: space.gorogoro.playtimerewards.PlayTimeRewards
+api-version: '1.21.11'
+authors: [kubotan]
+description: Tracks active play time and rewards players.
+website: https://github.com/gorogoro-space/PlayTimeRewards
+depend: [LuckPerms]
+softdepend: [Votifier]
+
+commands:
+  playtime:
+    description: プレイ時間を表示します
+    usage: /playtime [プレイヤー名|top|reload]
+
+permissions:
+  playtimerewards.others:
+    description: 他のプレイヤーの情報を見られる
+    default: false
+  playtimerewards.reload:
+    description: 設定を読み直せる
+    default: op
