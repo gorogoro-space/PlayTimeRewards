@@ -7,7 +7,7 @@ save-interval-minutes: 5
 
 # 昇格の段階。上から順に判定します。
 # 今のグループ(LuckPerms のプライマリグループ)が from の人のプレイ時間(離席は除く)が
-# hours 時間に達すると、from のグループを外して to のグループに置き換えます。
+# hours 時間に達すると、to のグループを追加します(from のグループは外しません)。
 promotions:
   - from: default
     to: moderator

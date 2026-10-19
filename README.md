@@ -17,7 +17,7 @@ This plugin tracks players' active play time and rewards them.
 # Features
 - 放置(離席)している時間を除いたプレイ時間を記録します。操作がないまま一定時間(既定 10 分)たつと離席とみなし、最後に操作した時点までさかのぼって除きます。離席したとき・戻ったときは全員に通知します。
 - 今日・今週(月曜始まり)・今月・合計のプレイ時間、ログイン日数、投票数を記録します。
-- 合計のプレイ時間が設定した時間に達すると、LuckPerms のグループを置き換えます(既定では 5 時間で `default` → `moderator`)。
+- 合計のプレイ時間が設定した時間に達すると、LuckPerms のグループを追加します(既定では 5 時間で `default` に `moderator` を追加。`default` は残ります)。
 
 # Commands
 | コマンド | 内容 | 権限 |

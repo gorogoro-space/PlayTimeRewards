@@ -3,6 +3,7 @@ package space.gorogoro.playtimerewards;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 /**
- * プレイ時間による昇格(LuckPerms のグループの置き換え)。
+ * プレイ時間による昇格(LuckPerms のグループの追加。前のグループは外さない)。
  * 判定はメインスレッドでメモリ上のデータだけを見て行い、グループの書き換えは LuckPerms の API で別スレッドで行う。
  */
 final class PromotionManager {
@@ -64,16 +65,21 @@ final class PromotionManager {
             return;
         }
         PlayerRecord r = plugin.store().get(uuid);
-        String group = primaryGroup(uuid);
-        if (r == null || group == null) {
+        User user = luckPerms.getUserManager().getUser(uuid);
+        if (r == null || user == null) {
             return;
         }
+        String group = user.getPrimaryGroup();
         long total = plugin.tracker().liveTotal(r, now);
         for (Settings.Promotion p : plugin.settings().promotions) {
             if (!p.from().equalsIgnoreCase(group)) {
                 continue;
             }
             if (total < p.millis()) {
+                return;
+            }
+            // すでに to のグループが付いている人は昇格させない(プライマリグループが from のまま残る設定でも、毎分昇格し直さないため)
+            if (hasGroup(user, p.to())) {
                 return;
             }
             promote(player, p);
@@ -86,7 +92,6 @@ final class PromotionManager {
         String name = player.getName();
         pending.add(uuid);
         luckPerms.getUserManager().modifyUser(uuid, user -> {
-            user.data().remove(InheritanceNode.builder(p.from()).build());
             user.data().add(InheritanceNode.builder(p.to()).build());
         }).whenComplete((v, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
             pending.remove(uuid);
@@ -106,6 +111,16 @@ final class PromotionManager {
                 each.sendMessage(broadcast);
             }
         }));
+    }
+
+    /** そのグループが直接付いているか(継承しているだけのグループは含めない) */
+    private static boolean hasGroup(User user, String group) {
+        for (InheritanceNode node : user.getNodes(NodeType.INHERITANCE)) {
+            if (node.getGroupName().equalsIgnoreCase(group)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String formatHours(double hours) {
